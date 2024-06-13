@@ -1,6 +1,17 @@
+
 #include "solver.hpp"
+#if defined(_WIN32)
+#define NOGDI  // All GDI defines and routines
+#define NOUSER // All USER defines and routines
+#endif
+
 #include "json.hpp"
 #include "httplib.h"
+
+#if defined(_WIN32) // raylib uses these names as function parameters
+#undef near
+#undef far
+#endif
 
 Solver::Solver()
 {
@@ -28,6 +39,7 @@ Solver::Solver()
     this->grid = Grid();
     this->algorithm = Algorithm();
     algorithm.setBoard(board);
+    getSudokuBoard();
     // algorithm.run(0, 0) ;
 }
 
@@ -62,24 +74,32 @@ void Solver::draw()
 
 void Solver::getSudokuBoard()
 {
+    try
+    {
     httplib::Client cli("https://sudoku-api.vercel.app");
-    auto res = cli.Get("/api/dosuku");
 
-    if (res && res->status == 200) {
-        auto boardJson = nlohmann::json::parse(res->body);
-        auto grids = boardJson["newboard"]["grids"];
-        auto board = grids[0]["value"];
-        std::cout << "Sudoku Board:" << std::endl;
-        for (const auto& row : board) {
-            for (const auto& cell : row) {
-                std::cout << cell << " ";
-            }
-            std::cout << std::endl;
-        }
-    } else {
-        std::cerr << "Failed to fetch Sudoku board. Status code: " << (res ? res->status : 0) << std::endl;
-        if (res) {
-            std::cerr << "Response body: " << res->body << std::endl;
-        }
+
+        auto res = cli.Get("/api/dosuku");
+
+std::cout<<res<<std::endl ;
+        // if (res && res->status == 200)
+        // {
+        //     auto boardJson = nlohmann::json::parse(res->body);
+        //     auto grids = boardJson["newboard"]["grids"];
+        //     auto board = grids[0]["value"];
+        //     std::cout << "Sudoku Board:" << std::endl;
+        //     for (const auto &row : board)
+        //     {
+        //         for (const auto &cell : row)
+        //         {
+        //             std::cout << cell << " ";
+        //         }
+        //         std::cout << std::endl;
+        //     }
+        // }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
     }
 }
