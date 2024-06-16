@@ -24,10 +24,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Build Game Executable
 
-add_compile_definitions(CPPHTTPLIB_OPENSSL_SUPPORT)
-
-find_package(OpenSSL REQUIRED)
-
 add_executable(raylib_main main.cpp algorithm.cpp grid.cpp solver.cpp)
 
 if(NOT DEFINED ${PLATFORM})
@@ -41,8 +37,11 @@ CPMAddPackage(NAME raylib
     OPTIONS "PLATFORM ${PLATFORM}" "CMAKE_BUILD_TYPE MinSizeRel"
 )
 
+# include headers
 target_include_directories(raylib_main PRIVATE ${raylib_SOURCE_DIR}/src )
-target_link_libraries(raylib_main PRIVATE raylib ${TARGET} OpenSSL::SSL OpenSSL::Crypto)
+
+# link target exe with libraries
+target_link_libraries(raylib_main PRIVATE raylib)
 
 
 

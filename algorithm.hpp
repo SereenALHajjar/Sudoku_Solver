@@ -11,7 +11,7 @@ class Algorithm
         Algorithm() ;
         void setBoard(int board[9][9]);
         bool possible(int row, int col, int num);
-        void run(int row, int col);
+        void run(int row, int col , int & found);
         bool complete();
         int solution[9][9] ;
 

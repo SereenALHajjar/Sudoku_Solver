@@ -39,10 +39,12 @@ bool Algorithm::possible(int row, int col, int num)
     return true;
 }
 
-void Algorithm::run(int row, int col)
+void Algorithm::run(int row, int col , int & found)
 {
+    if(found) return ;
     if (complete() || row == 9)
     {
+        std::cout << "Solution:" << std::endl;
         for (int i = 0; i < 9; i++)
         {
 
@@ -53,14 +55,15 @@ void Algorithm::run(int row, int col)
             }
             std::cout << std::endl;
         }
+        found = 1;
         return;
     }
     if (board[row][col] != 0)
     {
         if (col < 8)
-            run(row, col + 1);
+            run(row, col + 1 , found);
         else
-            run(row + 1, 0);
+            run(row + 1, 0 , found );
         return;
     }
     for (int i = 1; i <= 9; i++)
@@ -70,9 +73,9 @@ void Algorithm::run(int row, int col)
             board[row][col] = i;
 
             if (col < 8)
-                run(row, col + 1);
+                run(row, col + 1 , found);
             else
-                run(row + 1, 0);
+                run(row + 1, 0 , found);
 
             board[row][col] = 0;
         }

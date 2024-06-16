@@ -10,6 +10,7 @@ public:
     Solver();
     void solve();
     void draw();
+    void init() ;
     void getSudokuBoard();
     std::vector<std::pair<int, int>> numberPos;
     std::vector<std::pair<int, int>> emptyPos;

@@ -45,15 +45,16 @@ int main()
         }
         if (clearButtonPressed)
         {
-            solver.solPos.clear();
+            solver.init() ;
             f = 0;
             i = 0;
         }
-
+        
         // Drawing
 
         BeginDrawing();
         ClearBackground(WHITE);
+
         solver.draw();
         if (f)
         {

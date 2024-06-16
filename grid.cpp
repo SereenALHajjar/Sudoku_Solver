@@ -27,5 +27,8 @@ void Grid::draw()
 
 void Grid::update(int row, int col, int num, Color color)
 {
+
     DrawText(TextFormat("%i", num), col * cellSize + 25 + 30, row * cellSize + 20 + 30, 20, color);
 }
+
+

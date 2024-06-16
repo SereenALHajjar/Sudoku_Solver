@@ -1,51 +1,42 @@
 
 #include "solver.hpp"
-#if defined(_WIN32)
-#define NOGDI  // All GDI defines and routines
-#define NOUSER // All USER defines and routines
-#endif
 
 #include "json.hpp"
-#include "httplib.h"
 
-#if defined(_WIN32) // raylib uses these names as function parameters
-#undef near
-#undef far
-#endif
+#include <fstream>
 
 Solver::Solver()
 {
-    int board[9][9] = {
-        {0, 0, 0, 8, 3, 0, 0, 5, 7},
-        {0, 0, 8, 5, 0, 0, 6, 0, 0},
-        {1, 3, 0, 0, 0, 2, 0, 8, 0},
-        {8, 0, 2, 3, 9, 0, 7, 0, 0},
-        {6, 0, 0, 1, 0, 0, 0, 3, 2},
-        {0, 5, 7, 2, 0, 4, 0, 9, 0},
-        {0, 6, 0, 4, 1, 0, 3, 7, 0},
-        {0, 7, 3, 9, 0, 8, 0, 6, 0},
-        {0, 0, 0, 7, 6, 0, 4, 0, 0}};
+    init();
+    this->grid = Grid();
+    this->algorithm = Algorithm();
+    // algorithm.run(0, 0) ;
+}
+
+void Solver::init()
+{
+    getSudokuBoard();
+    this->numberPos.clear();
+    this->emptyPos.clear();
+    this->solPos.clear();
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)
         {
-            this->board[i][j] = board[i][j];
+
             if (board[i][j] != 0)
                 this->numberPos.push_back({i, j});
             else
                 this->emptyPos.push_back({i, j});
         }
     }
-    this->grid = Grid();
-    this->algorithm = Algorithm();
-    algorithm.setBoard(board);
-    getSudokuBoard();
-    // algorithm.run(0, 0) ;
-}
 
+}
 void Solver::solve()
 {
-    algorithm.run(0, 0);
+    algorithm.setBoard(board);
+    int found =0 ;
+    algorithm.run(0, 0 , found);
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)
@@ -74,32 +65,34 @@ void Solver::draw()
 
 void Solver::getSudokuBoard()
 {
-    try
+    std::string file_path = "..\\..\\sudoku_boards\\Data.json";
+    std::ifstream file(file_path);
+    if (!file.is_open())
     {
-    httplib::Client cli("https://sudoku-api.vercel.app");
-
-
-        auto res = cli.Get("/api/dosuku");
-
-std::cout<<res<<std::endl ;
-        // if (res && res->status == 200)
-        // {
-        //     auto boardJson = nlohmann::json::parse(res->body);
-        //     auto grids = boardJson["newboard"]["grids"];
-        //     auto board = grids[0]["value"];
-        //     std::cout << "Sudoku Board:" << std::endl;
-        //     for (const auto &row : board)
-        //     {
-        //         for (const auto &cell : row)
-        //         {
-        //             std::cout << cell << " ";
-        //         }
-        //         std::cout << std::endl;
-        //     }
-        // }
+        std::cerr << "Could not open the file!" << std::endl;
+        // return 1;
     }
-    catch (const std::exception &e)
+    nlohmann::json sudoku_data;
+    file >> sudoku_data;
+    int random = rand() % sudoku_data.size();
+    auto board = sudoku_data[random]["value"];
+    int i = 0, j = 0;
+    for (const auto &row : board)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        j = 0;
+        for (const auto &cell : row)
+        {
+            this->board[i][j] = cell;
+            j++;
+            if (j == 9)
+                break;
+            // std::cout << cell << std::endl;
+        }
+        // std::cout << std::endl;
+        i++;
+        if (i == 9)
+            break;
     }
+    // std::cout << "-------------------" << std::endl;
 }
+
